@@ -1,8 +1,8 @@
-# AI Read It Web API
+# AI, Read It! Web API
 
 ## Description
 
-This project is a Web API that uses AI to read.
+Web API wrapper on the [AI, Read It! library](https://github.com/feedbee/ai-read-it) . See also the [React.js UI app](https://github.com/feedbee/ai-read-it-app).projects.
 
 ## Installation
 
@@ -26,9 +26,10 @@ npm start
 
 # API Endpoints
 
-GET /api/v1/read: This endpoint does...
-Contributing
+- `GET /api/v1/read`
+
+# Contributing
 Provide instructions on how to contribute to your project.
 
-License
-This project is licensed under the MIT License - see the LICENSE.txt file for details.
+# License
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
