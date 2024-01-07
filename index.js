@@ -25,7 +25,7 @@ app.use(allowCrossDomain);
 const aiReadIt = require('ai-read-it');
 aiReadIt.init(process.env.OPENAI_API_KEY);
 
-app.post('/tts', (req, res) => {
+app.post('/tts-large', (req, res) => {
   const textToConvert = req.body.text;
 
   if (textToConvert === undefined) {
@@ -42,17 +42,26 @@ app.post('/tts', (req, res) => {
     res.type('text/json');
     res.status(500).json({ "error": error.message });
   }
+});
 
-  // aiReadIt.smallTextToSpeech(textToConvert)
-  //   .then(audioBuffer => {
-  //     res.type('audio/mpeg');
-  //     res.send(audioBuffer);
-  //   })
-  //   .catch(error => {
-  //     console.error("Error:", error);
-  //     res.type('text/json');
-  //     res.status(500).json({ error });
-  //   });
+app.post('/tts-small', (req, res) => {
+  const textToConvert = req.body.text;
+
+  if (textToConvert === undefined) {
+    res.status(400).json({ error: "Text was not provided. Please, send POST body in JSON with 'text' filed that contains text to read." });
+    return;
+  }
+
+  aiReadIt.smallTextToSpeech(textToConvert)
+    .then(audioBuffer => {
+      res.type('audio/mpeg');
+      res.send(audioBuffer);
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      res.type('text/json');
+      res.status(500).json({ error });
+    });
 });
 
 // Start the server
