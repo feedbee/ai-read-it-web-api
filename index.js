@@ -1,15 +1,16 @@
 const express = require('express');
 const { Readable } = require('stream');
 const bodyParser = require('body-parser');
+
+const port = process.env.PORT || 3001;
+const { allowedOrigins } = require('./config.js');
+
 const app = express();
-const port = 3001;
 
 app.use(bodyParser.json()); // for parsing application/json
 
 // CORS middleware
 const allowCrossDomain = function(req, res, next) {
-  const allowedOrigins = ['http://localhost:3000'];
-
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
        res.setHeader('Access-Control-Allow-Origin', origin);
