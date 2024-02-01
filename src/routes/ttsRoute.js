@@ -6,7 +6,9 @@ const router = express.Router();
 const aiReadIt = require('ai-read-it');
 aiReadIt.init(process.env.OPENAI_API_KEY);
 
-router.post('/large', (req, res) => {
+const { authRequiredMiddleware } = require('../middleware/auth.js');
+
+router.post('/large', authRequiredMiddleware, (req, res) => {
   const textToConvert = req.body.text;
 
   if (textToConvert === undefined) {
@@ -25,7 +27,7 @@ router.post('/large', (req, res) => {
   }
 });
 
-router.post('/small', (req, res) => {
+router.post('/small', authRequiredMiddleware, (req, res) => {
   const textToConvert = req.body.text;
 
   if (textToConvert === undefined) {

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { jwtSecretKey } = require('../../config.js');
+const { jwtSecretKey, authMode } = require('../../config.js');
 
 // Middleware to validate JWT
 const userAuthMiddleware = (req, res, next) => {
@@ -23,13 +23,23 @@ const userAuthMiddleware = (req, res, next) => {
       const decoded = jwt.verify(token, jwtSecretKey);
       // Set user context
       req.userToken = decoded;
-      next(); // Go to the next middleware/route
     } catch (ex) {
       res.status(400).send('Invalid token.');
     }
   } else {
     res.status(400).send('Invalid token format.');
   }
+
+  next();
 };
 
-module.exports = userAuthMiddleware;
+const authRequiredMiddleware = (req, res, next) => {
+  if (authMode === 'required') {
+    if (!req.userToken) {
+      return res.status(403).send('This resaource requires authentication');
+    }
+  }
+  next();
+};
+
+module.exports = { userAuthMiddleware, authRequiredMiddleware };
