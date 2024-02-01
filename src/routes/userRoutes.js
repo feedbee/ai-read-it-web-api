@@ -2,10 +2,11 @@ const express = require('express');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const router = express.Router();
 const userModel = require('../models/user.js');
 const { googleAuthClientId, googleAuthClientSecret, jwtSecretKey, encryptionKey } = require('../../config.js');
 const Encryption = require('../util/encryption.js');
+
+const router = express.Router();
 
 const oAuth2Client = new OAuth2Client(googleAuthClientId, googleAuthClientSecret, 'postmessage');
 

@@ -1,10 +1,16 @@
 const express = require('express');
-const { Readable } = require('stream');
-const bodyParser = require('body-parser');
 const { connectToDB } = require('./src/util/db.js');
-const userRoutes = require('./src/routes/userRoutes.js');
-const userAuthMiddleware = require('./src/middleware/auth.js');
 
+// Middleware
+const bodyParser = require('body-parser');
+const userAuthMiddleware = require('./src/middleware/auth.js');
+const corsMiddleware = require('./src/middleware/cors.js');
+
+// Routes
+const userRoutes = require('./src/routes/userRoutes.js');
+const ttsRoutes = require('./src/routes/ttsRoute.js');
+
+// Configuration
 const port = process.env.PORT || 3001;
 const { allowedOrigins, authMode } = require('./config.js');
 
@@ -12,81 +18,27 @@ const app = express();
 
 // -- Middleware ---
 
-app.use(bodyParser.json()); // for parsing application/json
-
-// CORS middleware
-const allowCrossDomain = function(req, res, next) {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-       res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-
-  next();
-}
-app.use(allowCrossDomain);
-
+app.use(bodyParser.json());
+app.use(corsMiddleware);
 app.use(userAuthMiddleware);
 
-// User authentication
+// -- App Routes ---
+
+// User authentication routes
 if (authMode !== "disabled") {
   app.use('/users', userRoutes);
 }
 
-// -- Main Rotes ---
-
-const aiReadIt = require('ai-read-it');
-aiReadIt.init(process.env.OPENAI_API_KEY);
-
-app.post('/tts-large', (req, res) => {
-  const textToConvert = req.body.text;
-
-  if (textToConvert === undefined) {
-    res.status(400).json({ error: "Text was not provided. Please, send POST body in JSON with 'text' filed that contains text to read." });
-    return;
-  }
-
-  try {
-    const readable = Readable.from(aiReadIt.largeTextToSpeech(textToConvert, {chunkSize: 2000}));
-    res.type('audio/mpeg');
-    readable.pipe(res);
-  } catch (error) {
-    console.error(error);
-    res.type('text/json');
-    res.status(500).json({ "error": error.message });
-  }
-});
-
-app.post('/tts-small', (req, res) => {
-  const textToConvert = req.body.text;
-
-  if (textToConvert === undefined) {
-    res.status(400).json({ error: "Text was not provided. Please, send POST body in JSON with 'text' filed that contains text to read." });
-    return;
-  }
-
-  aiReadIt.smallTextToSpeech(textToConvert)
-    .then(audioBuffer => {
-      res.type('audio/mpeg');
-      res.send(audioBuffer);
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      res.type('text/json');
-      res.status(500).json({ error });
-    });
-});
+// Text-To-Speach routes
+app.use('/tts', ttsRoutes);
 
 // -- App Initialization ---
 
 // Async function to encapsulate the connection and server start logic
 async function run() {
-  // Database is required if only user authentication is enabled
+  // Open database connection if only user authentication is enabled
   if (authMode !== "disabled") {
     try {
-      // Connect to MongoDB
       await connectToDB();
     } catch (error) {
       console.error("Failed to connect to MongoDB or start the server", error);
