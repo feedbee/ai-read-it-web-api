@@ -1,11 +1,16 @@
 const express = require('express');
 const { Readable } = require('stream');
 const bodyParser = require('body-parser');
+const { connectToDB } = require('./src/util/db.js');
+const userRoutes = require('./src/routes/userRoutes.js');
+const userAuthMiddleware = require('./src/middleware/auth.js');
 
 const port = process.env.PORT || 3001;
-const { allowedOrigins } = require('./config.js');
+const { allowedOrigins, authMode } = require('./config.js');
 
 const app = express();
+
+// -- Middleware ---
 
 app.use(bodyParser.json()); // for parsing application/json
 
@@ -17,11 +22,20 @@ const allowCrossDomain = function(req, res, next) {
   }
 
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
 
   next();
 }
 app.use(allowCrossDomain);
+
+app.use(userAuthMiddleware);
+
+// User authentication
+if (authMode !== "disabled") {
+  app.use('/users', userRoutes);
+}
+
+// -- Main Rotes ---
 
 const aiReadIt = require('ai-read-it');
 aiReadIt.init(process.env.OPENAI_API_KEY);
@@ -65,7 +79,25 @@ app.post('/tts-small', (req, res) => {
     });
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-});
+// -- App Initialization ---
+
+// Async function to encapsulate the connection and server start logic
+async function run() {
+  // Database is required if only user authentication is enabled
+  if (authMode !== "disabled") {
+    try {
+      // Connect to MongoDB
+      await connectToDB();
+    } catch (error) {
+      console.error("Failed to connect to MongoDB or start the server", error);
+      process.exit(1);
+    }
+  }
+
+  // Start the Express server
+  app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
+  });
+}
+
+run().catch(console.error);
