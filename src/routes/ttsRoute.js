@@ -3,6 +3,8 @@ const { Readable } = require('stream');
 const express = require('express');
 const router = express.Router();
 
+const { chunkSize } = require('../../config.js');
+
 const aiReadIt = require('ai-read-it');
 aiReadIt.init(process.env.OPENAI_API_KEY);
 
@@ -17,7 +19,7 @@ router.post('/large', authRequiredMiddleware, (req, res) => {
   }
 
   try {
-    const readable = Readable.from(aiReadIt.largeTextToSpeech(textToConvert, {chunkSize: 2000}));
+    const readable = Readable.from(aiReadIt.largeTextToSpeech(textToConvert, {chunkSize: chunkSize}));
     res.type('audio/mpeg');
     readable.pipe(res);
   } catch (error) {
