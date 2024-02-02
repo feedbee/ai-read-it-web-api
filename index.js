@@ -2,7 +2,6 @@ const express = require('express');
 const { connectToDB } = require('./src/util/db.js');
 
 // Middleware
-const bodyParser = require('body-parser');
 const { userAuthMiddleware } = require('./src/middleware/auth.js');
 const corsMiddleware = require('./src/middleware/cors.js');
 
@@ -18,7 +17,7 @@ const app = express();
 
 // -- Middleware ---
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(corsMiddleware);
 app.use(userAuthMiddleware);
 
