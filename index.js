@@ -11,7 +11,7 @@ const ttsRoutes = require('./src/routes/ttsRoute.js');
 
 // Configuration
 const port = process.env.PORT || 3001;
-const { allowedOrigins, authMode } = require('./config.js');
+const { authMode } = require('./config.js');
 
 const app = express();
 
@@ -48,6 +48,7 @@ async function run() {
   // Start the Express server
   app.listen(port, () => {
     console.log(`Server started on port ${port}`);
+    console.log("Auth mode is", authMode);
   });
 }
 

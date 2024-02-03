@@ -49,7 +49,7 @@ const userAuthMiddleware = async (req, res, next) => {
 const authRequiredMiddleware = (req, res, next) => {
   if (authMode === 'required') {
     if (!req.userToken) {
-      return res.status(403).send('This resaource requires authentication');
+      return res.status(401).send(JSON.stringify({error: 'This operation requires authentication'}));
     }
   }
   next();

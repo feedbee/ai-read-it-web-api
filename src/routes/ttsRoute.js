@@ -133,7 +133,7 @@ const tryDebitUser = async (textToConvert, req, res) => {
     const userDebited = await userModel.debitUserCharactersBalance(req.user, amount);
     if (!userDebited) {
       res.type('text/json');
-      res.status(403).json({ "error": 'Billing issue' });
+      res.status(403).json({ "error": 'Not enough characters balance to perform the operation.' });
       return false;
     }
   }

@@ -35,7 +35,7 @@ async function debitUserCharactersBalance(user, amount) {
             console.info("Balance updated debited for user", user.email, "for amount", result.charactersCredit);
             return true;
         } else {
-            console.info("Not enough funds or user not found.");
+            console.info("Not enough funds or user not found:", user.email, "/", user.charactersCredit);
             return false;
         }
     } catch (error) {
