@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { jwtSecretKey, authMode } = require('../../config.js');
+const userModel = require('../models/user.js');
 
 // Middleware to validate JWT
-const userAuthMiddleware = (req, res, next) => {
+const userAuthMiddleware = async (req, res, next) => {
   req.userToken = null;
 
   // Get the token from the request header
@@ -25,6 +26,18 @@ const userAuthMiddleware = (req, res, next) => {
       req.userToken = decoded;
     } catch (ex) {
       res.status(400).send('Invalid token.');
+    }
+
+    // Get user from DB
+    try {
+      const user = await userModel.getUserByEmail(req.userToken.user.email);
+      if (!user) {
+        res.status(401).send('User not found by token.');
+      } else {
+        req.user = user; 
+      }
+    } catch (error) {
+      res.status(401).send('User not found by token.');
     }
   } else {
     res.status(400).send('Invalid token format.');

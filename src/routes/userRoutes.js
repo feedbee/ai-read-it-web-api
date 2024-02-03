@@ -22,10 +22,12 @@ router.post('/auth/google', async (req, res) => {
 
   if (!user) {
     userModel.addUser({
+      name: dataFromToken.name,
       email: dataFromToken.email,
       avatar: dataFromToken.picture,
     });
   }
+  // TODO: update user if exists
 
   let expireDate = new Date();
   expireDate.setMonth(expireDate.getMonth() + 1);
