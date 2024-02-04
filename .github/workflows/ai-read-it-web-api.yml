@@ -22,14 +22,14 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t feedbee/ai-read-it-app:latest --build-arg BUILD_DATE=${{ env.BUILD_DATE }} .
-          docker tag feedbee/ai-read-it-app:latest feedbee/ai-read-it-app:master
-          docker tag feedbee/ai-read-it-app:latest feedbee/ai-read-it-app:master-${{ env.BUILD_DATE }}
+          docker build -t feedbee/ai-read-it-web-api:latest --build-arg BUILD_DATE=${{ env.BUILD_DATE }} .
+          docker tag feedbee/ai-read-it-web-api:latest feedbee/ai-read-it-web-api:master
+          docker tag feedbee/ai-read-it-web-api:latest feedbee/ai-read-it-web-api:master-${{ env.BUILD_DATE }}
         env:
           BUILD_DATE: ${{ env.BUILD_DATE }}
 
       - name: Push Docker Image
         run: |
-          docker push feedbee/ai-read-it-app:latest
-          docker push feedbee/ai-read-it-app:master
-          docker push feedbee/ai-read-it-app:master-${{ env.BUILD_DATE }}
+          docker push feedbee/ai-read-it-web-api:latest
+          docker push feedbee/ai-read-it-web-api:master
+          docker push feedbee/ai-read-it-web-api:master-${{ env.BUILD_DATE }}
