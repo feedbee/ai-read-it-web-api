@@ -1,0 +1,35 @@
+name: Node.js Docker Build & Publish
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set Build Date
+        id: set-build-date
+        run: echo "BUILD_DATE=$(date +'%Y.%m.%d.%H.%M.%S')" >> $GITHUB_ENV
+
+      - name: Build Docker Image
+        run: |
+          docker build -t feedbee/text-to-speech-web-api:latest --build-arg BUILD_DATE=${{ env.BUILD_DATE }} .
+          docker tag feedbee/text-to-speech-web-api:latest feedbee/text-to-speech-web-api:master
+          docker tag feedbee/text-to-speech-web-api:latest feedbee/text-to-speech-web-api:master-${{ env.BUILD_DATE }}
+        env:
+          BUILD_DATE: ${{ env.BUILD_DATE }}
+
+      - name: Push Docker Image
+        run: |
+          docker push feedbee/text-to-speech-web-api:latest
+          docker push feedbee/text-to-speech-web-api:master
+          docker push feedbee/text-to-speech-web-api:master-${{ env.BUILD_DATE }}
