@@ -1,4 +1,4 @@
-name: Node.js Docker Build & Publish
+name: AI, Read It! Web API Docker Build & Publish
 
 on:
   push:
