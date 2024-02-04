@@ -55,4 +55,11 @@ const authRequiredMiddleware = (req, res, next) => {
   next();
 };
 
-module.exports = { userAuthMiddleware, authRequiredMiddleware };
+const authRequiredAlwaysMiddleware = (req, res, next) => {
+  if (!req.userToken) {
+    return res.status(401).send(JSON.stringify({error: 'This operation requires authentication'}));
+  }
+  next();
+};
+
+module.exports = { userAuthMiddleware, authRequiredMiddleware, authRequiredAlwaysMiddleware };

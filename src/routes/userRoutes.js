@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const userModel = require('../models/user.js');
 const { googleAuthClientId, googleAuthClientSecret, jwtSecretKey, encryptionKey } = require('../../config.js');
 const Encryption = require('../util/encryption.js');
+const { authRequiredAlwaysMiddleware } = require('../middleware/auth.js');
 
 const router = express.Router();
 
@@ -68,6 +69,10 @@ router.post('/auth/logout', async (req, res) => {
   }
 
   res.json({result: "not logged in"});
+});
+
+router.get('/credits', authRequiredAlwaysMiddleware, async (req, res) => {
+  res.json({amount: req.user.charactersCredit});
 });
 
 module.exports = router;
