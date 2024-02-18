@@ -50,7 +50,7 @@ router.post('/auth/google', async (req, res) => {
 
   let appTokenString = jwt.sign(appToken, jwtSecretKey);
 
-  res.json({token: appTokenString});
+  res.json({ token: appTokenString });
 });
 
 router.post('/auth/logout', async (req, res) => {
@@ -59,20 +59,20 @@ router.post('/auth/logout', async (req, res) => {
     let accessToken = encryption.decrypt(req.userToken.payload);
     try {
       await oAuth2Client.revokeToken(accessToken);
-      res.json({result: "success"});
+      res.json({ result: "success" });
       return;
     } catch (error) {
       console.log('Error logging out on Google side: ', error);
-      res.json({result: "failure"});
+      res.json({ result: "failure" });
       return;
     }
   }
 
-  res.json({result: "not logged in"});
+  res.json({ result: "not logged in" });
 });
 
 router.get('/credits', authRequiredAlwaysMiddleware, async (req, res) => {
-  res.json({amount: req.user.charactersCredit});
+  res.json({ amount: req.user.charactersCredit });
 });
 
 module.exports = router;

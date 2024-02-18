@@ -14,7 +14,7 @@ const { authRequiredMiddleware } = require('../middleware/auth.js');
 
 
 const buildOptions = (reqBody) => {
-  const o = {chunkSize};
+  const o = { chunkSize };
   if (reqBody.model) {
     o.model = reqBody.model;
   }
@@ -40,31 +40,31 @@ const outputFormats = {
 
 const [validatorJson, validatorTextLarge, validatorTextSmall, validatorModel, validatorVoice,
   validatorResponseFormat, validatorSpeed, validatorAllowedParams] = [
-  check('Content-Type').custom((value, { req }) => {
-    return req.headers['content-type'] === 'application/json';
-  }).withMessage('Please, send POST body in JSON with at least "text" property that contains text to read. The request must be "application/json".'),
-  body('text').isString().isLength({ min: 3, max: largeTtsMaxChars }).withMessage(`Text must be a string from 3 to ${largeTtsMaxChars} chars`),
-  body('text').isString().isLength({ min: 3, max: 4096 }).withMessage('Text must be a string from 3 to 4096 chars'),
-  body('model').optional().isIn(['tts-1', 'tts-1-hd']).withMessage(`Model must be within: tts-1, tts-1-hd`),
-  body('voice').optional().isIn(['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']).withMessage(`Voice must be within: alloy, echo, fable, onyx, nova, shimmer`),
-  body('responseFormat').optional().isIn(['mp3', 'opus', 'aac', 'flac']).withMessage(`Response format must be within: mp3, opus, aac, flac`),
-  body('speed').optional().isFloat({ min: 0.25, max: 4.0 }).withMessage(`Speed must be within: mp3, opus, aac, flac`),
-  body().custom((body) => {
-    if (body.hasOwnProperty('model') && !allowedParams.includes('model')) {
-      throw new Error('Model parameter is not allowed');
-    }
-    if (body.hasOwnProperty('voice') && !allowedParams.includes('voice')) {
-      throw new Error('Model parameter is not allowed');
-    }
-    if (body.hasOwnProperty('responseFormat') && !allowedParams.includes('responseFormat')) {
-      throw new Error('Model parameter is not allowed');
-    }
-    if (body.hasOwnProperty('speed') && !allowedParams.includes('speed')) {
-      throw new Error('Model parameter is not allowed');
-    }
-    return true; // Validation passed
-  }),
-];
+    check('Content-Type').custom((value, { req }) => {
+      return req.headers['content-type'] === 'application/json';
+    }).withMessage('Please, send POST body in JSON with at least "text" property that contains text to read. The request must be "application/json".'),
+    body('text').isString().isLength({ min: 3, max: largeTtsMaxChars }).withMessage(`Text must be a string from 3 to ${largeTtsMaxChars} chars`),
+    body('text').isString().isLength({ min: 3, max: 4096 }).withMessage('Text must be a string from 3 to 4096 chars'),
+    body('model').optional().isIn(['tts-1', 'tts-1-hd']).withMessage(`Model must be within: tts-1, tts-1-hd`),
+    body('voice').optional().isIn(['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']).withMessage(`Voice must be within: alloy, echo, fable, onyx, nova, shimmer`),
+    body('responseFormat').optional().isIn(['mp3', 'opus', 'aac', 'flac']).withMessage(`Response format must be within: mp3, opus, aac, flac`),
+    body('speed').optional().isFloat({ min: 0.25, max: 4.0 }).withMessage(`Speed must be within: mp3, opus, aac, flac`),
+    body().custom((body) => {
+      if (body.hasOwnProperty('model') && !allowedParams.includes('model')) {
+        throw new Error('Model parameter is not allowed');
+      }
+      if (body.hasOwnProperty('voice') && !allowedParams.includes('voice')) {
+        throw new Error('Model parameter is not allowed');
+      }
+      if (body.hasOwnProperty('responseFormat') && !allowedParams.includes('responseFormat')) {
+        throw new Error('Model parameter is not allowed');
+      }
+      if (body.hasOwnProperty('speed') && !allowedParams.includes('speed')) {
+        throw new Error('Model parameter is not allowed');
+      }
+      return true; // Validation passed
+    }),
+  ];
 
 const middlewaresLarge = [
   authRequiredMiddleware, validatorJson, validatorTextLarge, validatorModel, validatorVoice, validatorResponseFormat,

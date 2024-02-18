@@ -18,23 +18,23 @@ async function connectToDB() {
 }
 
 async function setupDB(db) {
-    const collections = await db.listCollections().toArray();
-    const collectionNames = collections.map(c => c.name);
+  const collections = await db.listCollections().toArray();
+  const collectionNames = collections.map(c => c.name);
 
-    // Users - collection
-    if (!collectionNames.includes('users')) {
-        await db.createCollection("users");
-        console.log("Collection 'users' created");
-    }
+  // Users - collection
+  if (!collectionNames.includes('users')) {
+    await db.createCollection("users");
+    console.log("Collection 'users' created");
+  }
 
-    // Users - indexes
-    await db.collection("users").createIndex({ "email": 1 }, { unique: true });
-    await db.collection("users").createIndex({ "guid": 1 }, { unique: true });
-    console.log("Unique indexes added on 'email' and 'guid'");
+  // Users - indexes
+  await db.collection("users").createIndex({ "email": 1 }, { unique: true });
+  await db.collection("users").createIndex({ "guid": 1 }, { unique: true });
+  console.log("Unique indexes added on 'email' and 'guid'");
 }
 
 function getDB() {
-    return db;
+  return db;
 }
 
 module.exports = { connectToDB, getDB };
