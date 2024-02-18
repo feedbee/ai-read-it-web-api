@@ -1,3 +1,4 @@
+// App
 const express = require('express');
 const { connectToDB } = require('./src/util/db.js');
 
@@ -10,31 +11,32 @@ const userRoutes = require('./src/routes/userRoutes.js');
 const ttsRoutes = require('./src/routes/ttsRoute.js');
 
 // Configuration
-const port = process.env.PORT || 3001;
 const { authMode } = require('./config.js');
 
-const app = express();
+// Initialization
+function createApp() {
+  const app = express();
 
-// -- Middleware ---
+  // Middleware
+  app.use(express.json());
+  app.use(corsMiddleware);
+  app.use(userAuthMiddleware);
 
-app.use(express.json());
-app.use(corsMiddleware);
-app.use(userAuthMiddleware);
+  // User authentication routes if only user authentication is enabled
+  if (authMode !== "disabled") {
+    app.use('/users', userRoutes);
+  }
 
-// -- App Routes ---
+  // TTS routes
+  app.use('/tts', ttsRoutes);
 
-// User authentication routes
-if (authMode !== "disabled") {
-  app.use('/users', userRoutes);
+  return app;
 }
 
-// Text-To-Speach routes
-app.use('/tts', ttsRoutes);
-
-// -- App Initialization ---
-
-// Async function to encapsulate the connection and server start logic
+// Start
 async function run() {
+  const app = createApp();
+
   // Open database connection if only user authentication is enabled
   if (authMode !== "disabled") {
     try {
@@ -45,11 +47,18 @@ async function run() {
     }
   }
 
-  // Start the Express server
+  // Start the server
+  const port = process.env.PORT || 3001;
   app.listen(port, () => {
     console.log(`Server started on port ${port}`);
     console.log("Auth mode is", authMode);
   });
 }
 
-run().catch(console.error);
+// Start the server if not imported as a module (for tests)
+if (require.main === module) {
+  run().catch(console.error);
+}
+
+// Export for tests
+module.exports = createApp;
